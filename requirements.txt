@@ -81,7 +81,6 @@ soupsieve==2.2
 SpeechRecognition==3.8.1
 SQLAlchemy==1.4.20
 sqlparse==0.4.1
-TA-Lib==0.4.20
 tenacity==7.0.0
 termcolor==1.1.0
 textract==1.6.3
