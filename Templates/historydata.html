@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Historydata
+{% endblock %}
+
+{% block main %}
+
+<body style="font-family:arial, sans-serif">
+    <h4 style="background:lightblue;padding:10px">
+        <b><i>Historical data of {{code}} from {{ss}} to {{ee}} on {{ii}} intervals</i></b>
+    </h4>
+
+    <div id="graph1"></div>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+        var graph1 = {{ graphJSON1|safe }};
+
+        Plotly.plot("graph1", graph1, {});          
+    
+    </script>
+</body>
+
+{% endblock %}

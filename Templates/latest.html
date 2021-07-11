@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Check2
+{% endblock %}
+
+{% block main %}
+    <form action="/Latest" method="post">
+        <div>
+            <input name="symbol" placeholder="Input Symbol" type='text'>
+        </div>
+
+        <p><br> </p>
+        <button class = "btn btn-primary" type = "submit">Get Real-Time Price</button>
+
+
+    </form>
+{% endblock %}

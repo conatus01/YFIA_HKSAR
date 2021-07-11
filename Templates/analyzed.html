@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    analyzed
+{% endblock %}
+
+{% block main %}
+
+<body style="font-family:arial, sans-serif">
+    <h1 style="background:lightblue;padding:10px">
+        <b><i>Market Analysis of {{code}}</i></b>
+    </h1>
+
+    <div id="graph1"></div>
+    <div id="graph2"></div>
+    <div id="graph3"></div>
+    <div id="graph4"></div>
+    <div id="graph5"></div>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+        var graph1 = {{ graphJSON1|safe }};
+        var graph2 = {{ graphJSON2|safe }};
+        var graph3 = {{ graphJSON3|safe }};
+        var graph4 = {{ graphJSON4|safe }};
+        var graph5 = {{ graphJSON5|safe }}; 
+        Plotly.plot("graph1", graph1, {});          
+        Plotly.plot("graph2", graph2, {});
+        Plotly.plot("graph3", graph3, {});
+        Plotly.plot("graph4", graph4, {});
+        Plotly.plot("graph5", graph5, {});    
+    </script>
+</body>
+
+{% endblock %}

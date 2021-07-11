@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    latestdata
+{% endblock %}
+
+{% block main %}
+
+<body style="font-family:arial, sans-serif">
+    <h4 style="background:lightblue;padding:10px">
+        <b><i>Latest stock prices of {{code}} on minute-to-minute intervals</i></b>
+    </h4>
+    <h6>Real-time price at {{tm}} is <b>{{lp}}</b></h6>
+    <div id="graph1"></div>
+
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+        var graph1 = {{ graphJSON1|safe }};
+
+        Plotly.plot("graph1", graph1, {});          
+    
+    </script>
+</body>
+
+{% endblock %}

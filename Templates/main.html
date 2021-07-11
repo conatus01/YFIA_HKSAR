@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    MainPage
+{% endblock %}
+
+{% block main %}
+    <h3><b>Guide:</b></h3>
+    <mark>  <b>Volatility:</b> An estimate based on Bollinger's bands. 0 means no price fluctuations and 1 means record-breaking price fluctuations<br></mark>
+    <mark>  <b>Stochastic oscillator:</b> Oversold when smaller than 20; Overbought when larger than 80<br> </mark>
+    <mark>  <b>Relative Strength Index (RSI):</b> Oversold when smaller than 30; Overbought when larger than 70<br> </mark>
+    <mark>  <b>Market Saturation:</b> A combined estimate using stochastic oscillator and RSI, oversold when smaller than -0.5, ovebought when larger than 0.5<br> </mark>
+    <mark>  <b>Average Directional Index (ADX):</b> Estimates how strong and stable a trend is. Implies a strong trend when larger than 25, maximum is 100<br> </mark>
+    <p><br></p>
+
+
+    <table class="table table-striped">
+        <thead>
+            <th>Symbol</th>
+            <th>Last price</th>
+            <th>Volatility (0-1)</th>
+            <th>Stoc. oscillator</th>
+            <th>RSI</th>
+            <th>Saturation (-1 to 1)</th>
+            <th>ADX</th>
+            <th>Last update</th>
+        </thead>
+
+        <tbody>
+            <h3><b>Worldwide Indexes</b></h3>
+            {% for h in hi %}
+            <tr>
+                <td><b>{{h["Symbol"]}}</b></td>
+                <td>{{h["Last price"]}}</td>
+                <td>{{h["volat"]}}</td>
+                <td>{{h["SO"]}}</td>
+                <td>{{h["RSI"]}}</td>
+                
+                {% if h["MSI"] > 0.5 %}
+                    <td style="color: green"><b>{{h["MSI"]}}</b></td>
+                {% elif (0-h["MSI"]) > 0.5 %}
+                    <td style="color: red"><b>{{h["MSI"]}}</b></td>
+                {% else %}
+                    <td>{{h["MSI"]}}</td>
+                {% endif %}                    
+                {% if h["ADX"] > 25 %}
+                    <td style="color: green"><b>{{h["ADX"]}}</b></td>
+                {% else %}
+                    <td>{{h["ADX"]}}</td>
+                {% endif %}
+                <td>{{h["Last update"]}}</td>
+            </tr>
+            {% endfor %}
+
+
+        </tbody>
+
+    </table>
+
+    <table class="table table-striped">
+        <thead>
+            <th>Symbol</th>
+            <th>Last price</th>
+            <th>Volatility (0-1)</th>
+            <th>Stoc. oscillator</th>
+            <th>RSI</th>
+            <th>Saturation (-1 to 1)</th>
+            <th>ADX</th>
+            <th>Last update</th>
+        </thead>
+
+        <tbody>
+            <h3><b>Worldwide Currencies to HKD</b></h3>
+            {% for h in hc %}
+            <tr>
+                <td><b>{{h["Symbol"]}}</b></td>
+                <td>{{h["Last price"]}}</td>
+                <td>{{h["volat"]}}</td>
+                <td>{{h["SO"]}}</td>
+                <td>{{h["RSI"]}}</td>
+                {% if h["MSI"] > 0.5 %}
+                    <td style="color: green"><b>{{h["MSI"]}}</b></td>
+                {% elif (0-h["MSI"]) > 0.5 %}
+                    <td style="color: red"><b>{{h["MSI"]}}</b></td>
+                {% else %}
+                    <td>{{h["MSI"]}}</td>
+                {% endif %}
+                {% if h["ADX"] > 25 %}
+                    <td style="color: green"><b>{{h["ADX"]}}</b></td>
+                {% else %}
+                    <td>{{h["ADX"]}}</td>
+                {% endif %}
+                <td>{{h["Last update"]}}</td>
+            </tr>
+            {% endfor %}
+
+
+        </tbody>
+
+    </table>
+
+    <table class="table table-striped">
+        <thead>
+            <th>Symbol</th>
+            <th>Last price</th>
+            <th>Volatility (0-1)</th>
+            <th>Stoc. oscillator</th>
+            <th>RSI</th>
+            <th>Saturation (-1 to 1)</th>
+            <th>ADX</th>
+            <th>Last update</th>
+        </thead>
+
+        <tbody>
+            <h3><b>HSI component stocks</b></h3>
+            {% for h in hs %}
+            <tr>
+                <td><b>{{h["Symbol"]}}</b></td>
+                <td>{{h["Last price"]}}</td>
+                <td>{{h["volat"]}}</td>
+                <td>{{h["SO"]}}</td>
+                <td>{{h["RSI"]}}</td>
+                {% if h["MSI"] > 0.5 %}
+                    <td style="color: green"><b>{{h["MSI"]}}</b></td>
+                {% elif (0-h["MSI"]) > 0.5 %}
+                    <td style="color: red"><b>{{h["MSI"]}}</b></td>
+                {% else %}
+                    <td>{{h["MSI"]}}</td>
+                {% endif %}
+                {% if h["ADX"] > 25 %}
+                    <td style="color: green"><b>{{h["ADX"]}}</b></td>
+                {% else %}
+                    <td>{{h["ADX"]}}</td>
+                {% endif %}
+                <td>{{h["Last update"]}}</td>
+            </tr>
+            {% endfor %}
+
+
+        </tbody>
+
+    </table>
+
+{% endblock %}

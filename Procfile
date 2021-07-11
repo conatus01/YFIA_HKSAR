@@ -1,0 +1,1 @@
+web: gunicorn Stocks:app --log-file -

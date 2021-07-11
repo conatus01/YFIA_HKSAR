@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    analyze
+{% endblock %}
+
+{% block main %}
+    <form action="/Analyze" method="post">
+        <div>
+            <input name="symbol" placeholder="Input Symbol" type='text'>
+        </div>
+
+        <p><br> </p>
+        <button class = "btn btn-primary" type = "submit">Analyze</button>
+
+
+    </form>
+{% endblock %}
