@@ -21,6 +21,7 @@ fake-useragent==0.1.11
 feedparser==6.0.8
 Flask==2.0.1
 Flask-Session==0.4.0
+gunicorn==19.0.0
 graphviz==0.16
 greenlet==1.1.0
 html5lib==1.1
