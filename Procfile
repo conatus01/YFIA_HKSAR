@@ -1,1 +1,1 @@
-web: gunicorn Stocks:app --log-file -
+web: gunicorn Stocks2:app --log-file -
