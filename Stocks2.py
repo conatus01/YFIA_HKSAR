@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pandas as pd
 import yfinance as yf
-import talib
+import ta
 import plotly.graph_objs as go
 import plotly
 import json
@@ -67,71 +67,97 @@ def main():
         for i in range(len(dataS)):
             DS1.append(yf.download(tickers=dataS[i][0], period = "1y", interval = "1d"))
             DS2.append(yf.download(tickers=dataS[i][0], period = "1d", interval = "1m"))
-            DS1[i].loc[:, 'upper'], DS1[i].loc[:, 'middle'], DS1[i].loc[:, 'lower'] = talib.BBANDS(DS1[i]['Close'])
-            DS1[i].loc[:, 'band_width'] = DS1[i]['upper']-DS1[i]['lower']
-            max_volatility = DS1[i]['band_width'][DS1[i]['band_width']==DS1[i]['band_width'].max()]
-            if (len((DS1[i]['band_width'][-1] / max_volatility).values) == 1):
-                volatility_indicator = (DS1[i]['band_width'][-1] / max_volatility).values[0]
-            DS1[i].loc[:, 'RSI'] = talib.RSI(DS1[i]['Close'])
-            RSI = DS1[i]['RSI'][-1]
-            DS1[i].loc[:, '14-high'] = DS1[i].High.rolling(14).max()
-            DS1[i].loc[:, '14-low'] = DS1[i].Low.rolling(14).min()
-            DS1[i].loc[:, '%K'] = (DS1[i]['Close'] - DS1[i]['14-low'])*100/(DS1[i]['14-high'] - DS1[i]['14-low'])
-            DS1[i].loc[:, '%D'] = DS1[i]['%K'].rolling(3).mean()
-            SO = DS1[i]['%D'][-1]
-            DS1[i].loc[:, 'ADX'] = talib.ADX(DS1[i]['High'], DS1[i]['Low'], DS1[i]['Close'], timeperiod=14)
-            adx = DS1[i]['ADX'][-1]
-            lp = DS2[i]['Close'][-1]
-            msi  = ((RSI+SO) / 100)-1
+            if ((len(DS1[i]['Close'])) > 30):
+                TABB = ta.volatility.BollingerBands(DS1[i]['Close'])
+                DS1[i].loc[:, 'upper'] = TABB.bollinger_hband()
+                DS1[i].loc[:, 'middle'] = TABB.bollinger_mavg()
+                DS1[i].loc[:, 'lower'] = TABB.bollinger_lband()            
+                DS1[i].loc[:, 'band_width'] = DS1[i]['upper']-DS1[i]['lower']
+                max_volatility = DS1[i]['band_width'][DS1[i]['band_width']==DS1[i]['band_width'].max()]
+                print(len((DS1[i]['band_width'][-1] / max_volatility).values))
+                if (len((DS1[i]['band_width'][-1] / max_volatility).values) == 1):
+                    volatility_indicator = (DS1[i]['band_width'][-1] / max_volatility).values[0]
+                else:
+                    volatility_indicator = 999
+                DS1[i].loc[:, 'RSI'] = ta.momentum.rsi(DS1[i]['Close'])
+                RSI = DS1[i]['RSI'][-1]
+                DS1[i].loc[:, '14-high'] = DS1[i].High.rolling(14).max()
+                DS1[i].loc[:, '14-low'] = DS1[i].Low.rolling(14).min()
+                DS1[i].loc[:, '%K'] = (DS1[i]['Close'] - DS1[i]['14-low'])*100/(DS1[i]['14-high'] - DS1[i]['14-low'])
+                DS1[i].loc[:, '%D'] = DS1[i]['%K'].rolling(3).mean()
+                SO = DS1[i]['%D'][-1]
+                DS1[i].loc[:, 'ADX'] = ta.trend.adx(DS1[i]['High'], DS1[i]['Low'], DS1[i]['Close'], window=14)
+                adx = DS1[i]['ADX'][-1]
+                lp = DS2[i]['Close'][-1]
+                msi  = ((RSI+SO) / 100)-1
 
-            hs.append({"Symbol": dataS[i][0], "Last price": str(np.round(lp,3)), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1), "Last update": DS2[i].index[-1]})
-
+                hs.append({"Symbol": dataS[i][0], "Last price": str(np.round(lp,3)), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1), "Last update": DS2[i].index[-1]})
+            else:
+                hs.append({"Symbol": dataS[i][0], "Last price": str(np.round(lp,3)), "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A", "Last update": DS2[i].index[-1]})
 
         print(hs)
         for i in range(len(dataC)):
             DC1.append(yf.download(tickers=dataC[i][0], period = "1y", interval = "1d"))
             DC2.append(yf.download(tickers=dataC[i][0], period = "1d", interval = "1m"))
-            DC1[i].loc[:, 'upper'], DC1[i].loc[:, 'middle'], DC1[i].loc[:, 'lower'] = talib.BBANDS(DC1[i]['Close'])
-            DC1[i].loc[:, 'band_width'] = DC1[i]['upper']-DC1[i]['lower']
-            max_volatility = DC1[i]['band_width'][DC1[i]['band_width']==DC1[i]['band_width'].max()]
-            if (len((DC1[i]['band_width'][-1] / max_volatility).values) == 1):
-                volatility_indicator = (DC1[i]['band_width'][-1] / max_volatility).values[0]
-            DC1[i].loc[:, 'RSI'] = talib.RSI(DC1[i]['Close'])
-            RSI = DC1[i]['RSI'][-1]
-            DC1[i].loc[:, '14-high'] = DC1[i].High.rolling(14).max()
-            DC1[i].loc[:, '14-low'] = DC1[i].Low.rolling(14).min()
-            DC1[i].loc[:, '%K'] = (DC1[i]['Close'] - DC1[i]['14-low'])*100/(DC1[i]['14-high'] - DC1[i]['14-low'])
-            DC1[i].loc[:, '%D'] = DC1[i]['%K'].rolling(3).mean()
-            SO = DC1[i]['%D'][-1]
-            DC1[i].loc[:, 'ADX'] = talib.ADX(DC1[i]['High'], DC1[i]['Low'], DC1[i]['Close'], timeperiod=14)
-            adx = DC1[i]['ADX'][-1]
-            lp = DC2[i]['Close'][-1]
-            msi  = ((RSI+SO) / 100)-1
+            if ((len(DC1[i]['Close'])) > 30):
+                TABB = ta.volatility.BollingerBands(DC1[i]['Close'])
+                DC1[i].loc[:, 'upper'] = TABB.bollinger_hband()
+                DC1[i].loc[:, 'middle'] = TABB.bollinger_mavg()
+                DC1[i].loc[:, 'lower'] = TABB.bollinger_lband()    
+                DC1[i].loc[:, 'band_width'] = DC1[i]['upper']-DC1[i]['lower']
+                max_volatility = DC1[i]['band_width'][DC1[i]['band_width']==DC1[i]['band_width'].max()]
+                if (len((DC1[i]['band_width'][-1] / max_volatility).values) == 1):
+                    volatility_indicator = (DC1[i]['band_width'][-1] / max_volatility).values[0]
+                else:
+                    volatility_indicator = 999
+                DC1[i].loc[:, 'RSI'] = ta.momentum.rsi(DC1[i]['Close'])
+                RSI = DC1[i]['RSI'][-1]
+                DC1[i].loc[:, '14-high'] = DC1[i].High.rolling(14).max()
+                DC1[i].loc[:, '14-low'] = DC1[i].Low.rolling(14).min()
+                DC1[i].loc[:, '%K'] = (DC1[i]['Close'] - DC1[i]['14-low'])*100/(DC1[i]['14-high'] - DC1[i]['14-low'])
+                DC1[i].loc[:, '%D'] = DC1[i]['%K'].rolling(3).mean()
+                SO = DC1[i]['%D'][-1]
+                DC1[i].loc[:, 'ADX'] = ta.trend.adx(DC1[i]['High'], DC1[i]['Low'], DC1[i]['Close'], window=14)
+                adx = DC1[i]['ADX'][-1]
+                lp = DC2[i]['Close'][-1]
+                msi  = ((RSI+SO) / 100)-1
 
-            hc.append({"Symbol": dataC[i][0], "Last price": str(np.round(lp,3)), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1), "Last update": DC2[i].index[-1]})    
+                hc.append({"Symbol": dataC[i][0], "Last price": str(np.round(lp,3)), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1), "Last update": DC2[i].index[-1]})    
+            else:
+                hc.append({"Symbol": dataC[i][0], "Last price": str(np.round(lp,3)), "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A", "Last update": DC2[i].index[-1]})
+
         print(hc)
 
         for i in range(len(dataI)):
             DI1.append(yf.download(tickers=dataI[i][0], period = "1y", interval = "1d"))
             DI2.append(yf.download(tickers=dataI[i][0], period = "1d", interval = "1m"))
-            DI1[i].loc[:, 'upper'], DI1[i].loc[:, 'middle'], DI1[i].loc[:, 'lower'] = talib.BBANDS(DI1[i]['Close'])
-            DI1[i].loc[:, 'band_width'] = DI1[i]['upper']-DI1[i]['lower']
-            max_volatility = DI1[i]['band_width'][DI1[i]['band_width']==DI1[i]['band_width'].max()]
-            if (len((DI1[i]['band_width'][-1] / max_volatility).values) == 1):
-                volatility_indicator = (DI1[i]['band_width'][-1] / max_volatility).values[0]
-            DI1[i].loc[:, 'RSI'] = talib.RSI(DI1[i]['Close'])
-            RSI = DI1[i]['RSI'][-1]
-            DI1[i].loc[:, '14-high'] = DI1[i].High.rolling(14).max()
-            DI1[i].loc[:, '14-low'] = DI1[i].Low.rolling(14).min()
-            DI1[i].loc[:, '%K'] = (DI1[i]['Close'] - DI1[i]['14-low'])*100/(DI1[i]['14-high'] - DI1[i]['14-low'])
-            DI1[i].loc[:, '%D'] = DI1[i]['%K'].rolling(3).mean()
-            SO = DI1[i]['%D'][-1]
-            DI1[i].loc[:, 'ADX'] = talib.ADX(DI1[i]['High'], DI1[i]['Low'], DI1[i]['Close'], timeperiod=14)
-            adx = DI1[i]['ADX'][-1]
-            lp = DI2[i]['Close'][-1]
-            msi  = ((RSI+SO) / 100)-1
+            if ((len(DI1[i]['Close'])) > 30):
+                TABB = ta.volatility.BollingerBands(DI1[i]['Close'])
+                DI1[i].loc[:, 'upper'] = TABB.bollinger_hband()
+                DI1[i].loc[:, 'middle'] = TABB.bollinger_mavg()
+                DI1[i].loc[:, 'lower'] = TABB.bollinger_lband()  
+                DI1[i].loc[:, 'band_width'] = DI1[i]['upper']-DI1[i]['lower']
+                max_volatility = DI1[i]['band_width'][DI1[i]['band_width']==DI1[i]['band_width'].max()]
+                if (len((DI1[i]['band_width'][-1] / max_volatility).values) == 1):
+                    volatility_indicator = (DI1[i]['band_width'][-1] / max_volatility).values[0]
+                else:
+                    volatility_indicator = 999
+                DI1[i].loc[:, 'RSI'] = ta.momentum.rsi(DI1[i]['Close'])
+                RSI = DI1[i]['RSI'][-1]
+                DI1[i].loc[:, '14-high'] = DI1[i].High.rolling(14).max()
+                DI1[i].loc[:, '14-low'] = DI1[i].Low.rolling(14).min()
+                DI1[i].loc[:, '%K'] = (DI1[i]['Close'] - DI1[i]['14-low'])*100/(DI1[i]['14-high'] - DI1[i]['14-low'])
+                DI1[i].loc[:, '%D'] = DI1[i]['%K'].rolling(3).mean()
+                SO = DI1[i]['%D'][-1]
+                DI1[i].loc[:, 'ADX'] = ta.trend.adx(DI1[i]['High'], DI1[i]['Low'], DI1[i]['Close'], window=14)
+                adx = DI1[i]['ADX'][-1]
+                lp = DI2[i]['Close'][-1]
+                msi  = ((RSI+SO) / 100)-1
 
-            hi.append({"Symbol": dataI[i][0], "Last price": str(np.round(lp,3)), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1), "Last update": DI2[i].index[-1]})   
+                hi.append({"Symbol": dataI[i][0], "Last price": str(np.round(lp,3)), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1), "Last update": DI2[i].index[-1]})   
+            else:
+                hi.append({"Symbol": dataI[i][0], "Last price": str(np.round(lp,3)), "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A", "Last update": DI2[i].index[-1]})
+
 
         return render_template('main.html',hs=hs, hc=hc, hi=hi)
     else:
@@ -158,8 +184,14 @@ def index():
         data.loc[:, 'ema26'] = data.Close.ewm(span=26, adjust=False).mean()
         data.loc[:, 'ema50'] = data.Close.ewm(span=50, adjust=False).mean()
         data.loc[:, 'ema200'] = data.Close.ewm(span=200, adjust=False).mean()
-        data.loc[:, 'macd'], data.loc[:,'macd_signal'], data.loc[:, 'macd_hist'] = talib.MACD(data['Close'])
-        data.loc[:, 'upper'], data.loc[:, 'middle'], data.loc[:, 'lower'] = talib.BBANDS(data['Close'])
+        TAMACD = ta.trend.MACD(data['Close'])
+        data.loc[:, 'macd'] = TAMACD.macd()
+        data.loc[:,'macd_signal'] = TAMACD.macd_signal()
+        data.loc[:, 'macd_hist'] = TAMACD.macd_diff()
+        TABB = ta.volatility.BollingerBands(data['Close'])
+        data.loc[:, 'upper'] = TABB.bollinger_hband()
+        data.loc[:, 'middle'] = TABB.bollinger_mavg()
+        data.loc[:, 'lower'] = TABB.bollinger_lband()   
         data.loc[:, 'band_width'] = data['upper']-data['lower']
 
 
@@ -323,7 +355,7 @@ def index():
         fig3.update_yaxes(autorange=True, fixedrange=False)
 
         #Plot RSI
-        data.loc[:, 'RSI'] = talib.RSI(data['Close'])
+        data.loc[:, 'RSI'] = ta.momentum.rsi(data['Close'])
         truncated_title_4 = truncated_title + "<b>RSI</b>"
         fig4 = go.Figure()
         fig4.add_trace(go.Scatter(x=data.index, y=data['RSI'], name='RSI', line = dict(width = 1)))
@@ -365,7 +397,7 @@ def index():
             fig4.add_annotation(dict(font=dict(size=14, color='red'),  x=0.9, y=-0.6,showarrow=False, text="<b>Market overbought.</b>", textangle=0, xanchor='left', xref="paper", yref="paper"))
 
         #Plot average directional index (ADX)
-        data.loc[:, 'ADX'] = talib.ADX(data['High'], data['Low'], data['Close'], timeperiod=14)
+        data.loc[:, 'ADX'] = ta.trend.adx(data['High'], data['Low'], data['Close'], window=14)
         truncated_title_5 = truncated_title + "<b>ADX</b>"
         fig5 = go.Figure()
         fig5.add_trace(go.Scatter(x=data.index, y=data['ADX'], name='ADX', line = dict(width = 1)))

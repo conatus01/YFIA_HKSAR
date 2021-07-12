@@ -36,14 +36,18 @@
                 <td>{{h["SO"]}}</td>
                 <td>{{h["RSI"]}}</td>
                 
-                {% if h["MSI"] > 0.5 %}
+                {% if h["MSI"] == "N/A" %}
+                    <td>{{h["MSI"]}}</td>
+                {% elif h["MSI"] > 0.5 %}
                     <td style="color: green"><b>{{h["MSI"]}}</b></td>
                 {% elif (0-h["MSI"]) > 0.5 %}
                     <td style="color: red"><b>{{h["MSI"]}}</b></td>
                 {% else %}
                     <td>{{h["MSI"]}}</td>
-                {% endif %}                    
-                {% if h["ADX"] > 25 %}
+                {% endif %}
+                {% if h["ADX"] == "N/A" %}
+                    <td>{{h["ADX"]}}</td>                    
+                {% elif h["ADX"] > 25 %}
                     <td style="color: green"><b>{{h["ADX"]}}</b></td>
                 {% else %}
                     <td>{{h["ADX"]}}</td>
@@ -78,14 +82,18 @@
                 <td>{{h["volat"]}}</td>
                 <td>{{h["SO"]}}</td>
                 <td>{{h["RSI"]}}</td>
-                {% if h["MSI"] > 0.5 %}
+                {% if h["MSI"] == "N/A" %}
+                    <td>{{h["MSI"]}}</td>
+                {% elif h["MSI"] > 0.5 %}
                     <td style="color: green"><b>{{h["MSI"]}}</b></td>
                 {% elif (0-h["MSI"]) > 0.5 %}
                     <td style="color: red"><b>{{h["MSI"]}}</b></td>
                 {% else %}
                     <td>{{h["MSI"]}}</td>
                 {% endif %}
-                {% if h["ADX"] > 25 %}
+                {% if h["ADX"] == "N/A" %}
+                    <td>{{h["ADX"]}}</td>
+                {% elif h["ADX"] > 25 %}
                     <td style="color: green"><b>{{h["ADX"]}}</b></td>
                 {% else %}
                     <td>{{h["ADX"]}}</td>
@@ -120,14 +128,18 @@
                 <td>{{h["volat"]}}</td>
                 <td>{{h["SO"]}}</td>
                 <td>{{h["RSI"]}}</td>
-                {% if h["MSI"] > 0.5 %}
+                {% if h["MSI"] == "N/A" %}
+                    <td>{{h["MSI"]}}</td>
+                {% elif h["MSI"] > 0.5 %}
                     <td style="color: green"><b>{{h["MSI"]}}</b></td>
                 {% elif (0-h["MSI"]) > 0.5 %}
                     <td style="color: red"><b>{{h["MSI"]}}</b></td>
                 {% else %}
                     <td>{{h["MSI"]}}</td>
                 {% endif %}
-                {% if h["ADX"] > 25 %}
+                {% if h["ADX"] == "N/A" %}
+                    <td>{{h["ADX"]}}</td>
+                {% elif h["ADX"] > 25 %}
                     <td style="color: green"><b>{{h["ADX"]}}</b></td>
                 {% else %}
                     <td>{{h["ADX"]}}</td>
