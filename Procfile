@@ -1,1 +1,1 @@
-web: gunicorn Stocks2:app --log-file -
+web: gunicorn Stocks2:app --timeout 300
