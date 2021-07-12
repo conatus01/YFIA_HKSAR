@@ -21,7 +21,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 #Individual analysis page
 #Show figures on webpage
 # Configure application
-app = Flask(__name__)
+app = Flask(__name__, template_folder = 'templates/')
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
