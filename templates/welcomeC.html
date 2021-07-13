@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    welcomeS
+{% endblock %}
+
+{% block main %}
+    <form action="/Currencies" method="post">
+        <h3><b>Welcome to worldwide currencies!</b></h3>
+
+        <p> </p>
+        <button class = "btn btn-primary" type = "submit">Click to retrieve database</button>
+        <p> </p>
+        <h5><i>Note that it normally takes 10-15 seconds to load!</i></h5>
+    </form>
+
+
+{% endblock %}

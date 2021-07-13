@@ -48,20 +48,8 @@ def main():
         with open('HKStocks.csv', newline='') as f:
             reader = csv.reader(f)
             dataS = list(reader)
-        with open('HKCurrency.csv', newline='') as f:
-            reader = csv.reader(f)
-            dataC = list(reader)
-        with open('Stockindex.csv', newline='') as f:
-            reader = csv.reader(f)
-            dataI = list(reader)
-
         DS1 = []
-        DC1 = []
-        DI1 = []
-
         hs = []
-        hc = []
-        hi =[]
 
         for i in range(len(dataS)):
             DS1.append(yf.download(tickers=dataS[i][0], period = "1y", interval = "1d"))
@@ -96,6 +84,62 @@ def main():
                 hs.append({"Symbol": dataS[i][0], "Last price": "N/A", "Percent": "N/A", "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A"})
 
         print(hs)
+
+        return render_template('mainS.html',hs=hs)
+    else:
+        return render_template("welcomeS.html")
+
+@app.route('/Indices', methods=["GET", "POST"])
+def indices():
+    if request.method == "POST":
+        with open('Stockindex.csv', newline='') as f:
+            reader = csv.reader(f)
+            dataI = list(reader)
+        DI1 = []
+        hi =[]
+        for i in range(len(dataI)):
+            DI1.append(yf.download(tickers=dataI[i][0], period = "1y", interval = "1d"))          
+
+            if ((len(DI1[i]['Close'])) > 30):
+                TABB = ta.volatility.BollingerBands(DI1[i]['Close'])
+                DI1[i].loc[:, 'upper'] = TABB.bollinger_hband()
+                DI1[i].loc[:, 'middle'] = TABB.bollinger_mavg()
+                DI1[i].loc[:, 'lower'] = TABB.bollinger_lband()  
+                DI1[i].loc[:, 'band_width'] = DI1[i]['upper']-DI1[i]['lower']
+                max_volatility = DI1[i]['band_width'][DI1[i]['band_width']==DI1[i]['band_width'].max()]
+                if (len((DI1[i]['band_width'][-1] / max_volatility).values) == 1):
+                    volatility_indicator = (DI1[i]['band_width'][-1] / max_volatility).values[0]
+                else:
+                    volatility_indicator = 999
+                DI1[i].loc[:, 'RSI'] = ta.momentum.rsi(DI1[i]['Close'])
+                RSI = DI1[i]['RSI'][-1]
+                DI1[i].loc[:, '14-high'] = DI1[i].High.rolling(14).max()
+                DI1[i].loc[:, '14-low'] = DI1[i].Low.rolling(14).min()
+                DI1[i].loc[:, '%K'] = (DI1[i]['Close'] - DI1[i]['14-low'])*100/(DI1[i]['14-high'] - DI1[i]['14-low'])
+                DI1[i].loc[:, '%D'] = DI1[i]['%K'].rolling(3).mean()
+                SO = DI1[i]['%D'][-1]
+                DI1[i].loc[:, 'ADX'] = ta.trend.adx(DI1[i]['High'], DI1[i]['Low'], DI1[i]['Close'], window=14)
+                adx = DI1[i]['ADX'][-1]
+                msi  = ((RSI+SO) / 100)-1
+                lp1 = DI1[i]['Close'][-1]
+                lp2 = ((DI1[i]['Close'][-1] - DI1[i]['Close'][-2]) / DI1[i]['Close'][-2])*100
+
+                hi.append({"Symbol": dataI[i][0], "Last price": np.round(lp1,3), "Percent": np.round(lp2,2), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1)})   
+            else:
+                hi.append({"Symbol": dataI[i][0], "Last price": "N/A", "Percent": "N/A", "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A"})
+
+        return render_template('mainI.html', hi=hi)
+    else:
+        return render_template("welcomeI.html")
+
+@app.route('/Currencies', methods=["GET", "POST"])
+def Currencies():
+    if request.method == "POST":
+        with open('HKCurrency.csv', newline='') as f:
+            reader = csv.reader(f)
+            dataC = list(reader)
+        DC1 = []
+        hc = []
         for i in range(len(dataC)):
             DC1.append(yf.download(tickers=dataC[i][0], period = "1y", interval = "1d"))
 
@@ -128,44 +172,9 @@ def main():
             else:
                 hc.append({"Symbol": dataC[i][0], "Last price": "N/A", "Percent": "N/A", "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A"})
 
-        print(hc)
-
-        for i in range(len(dataI)):
-            DI1.append(yf.download(tickers=dataI[i][0], period = "1y", interval = "1d"))          
-
-            if ((len(DI1[i]['Close'])) > 30):
-                TABB = ta.volatility.BollingerBands(DI1[i]['Close'])
-                DI1[i].loc[:, 'upper'] = TABB.bollinger_hband()
-                DI1[i].loc[:, 'middle'] = TABB.bollinger_mavg()
-                DI1[i].loc[:, 'lower'] = TABB.bollinger_lband()  
-                DI1[i].loc[:, 'band_width'] = DI1[i]['upper']-DI1[i]['lower']
-                max_volatility = DI1[i]['band_width'][DI1[i]['band_width']==DI1[i]['band_width'].max()]
-                if (len((DI1[i]['band_width'][-1] / max_volatility).values) == 1):
-                    volatility_indicator = (DI1[i]['band_width'][-1] / max_volatility).values[0]
-                else:
-                    volatility_indicator = 999
-                DI1[i].loc[:, 'RSI'] = ta.momentum.rsi(DI1[i]['Close'])
-                RSI = DI1[i]['RSI'][-1]
-                DI1[i].loc[:, '14-high'] = DI1[i].High.rolling(14).max()
-                DI1[i].loc[:, '14-low'] = DI1[i].Low.rolling(14).min()
-                DI1[i].loc[:, '%K'] = (DI1[i]['Close'] - DI1[i]['14-low'])*100/(DI1[i]['14-high'] - DI1[i]['14-low'])
-                DI1[i].loc[:, '%D'] = DI1[i]['%K'].rolling(3).mean()
-                SO = DI1[i]['%D'][-1]
-                DI1[i].loc[:, 'ADX'] = ta.trend.adx(DI1[i]['High'], DI1[i]['Low'], DI1[i]['Close'], window=14)
-                adx = DI1[i]['ADX'][-1]
-                msi  = ((RSI+SO) / 100)-1
-                lp1 = DI1[i]['Close'][-1]
-                lp2 = ((DI1[i]['Close'][-1] - DI1[i]['Close'][-2]) / DI1[i]['Close'][-2])*100
-
-                hi.append({"Symbol": dataI[i][0], "Last price": np.round(lp1,3), "Percent": np.round(lp2,2), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1)})   
-            else:
-                hi.append({"Symbol": dataI[i][0], "Last price": "N/A", "Percent": "N/A", "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A"})
-
-
-        return render_template('main.html',hs=hs, hc=hc, hi=hi)
+        return render_template('mainC.html', hc=hc)
     else:
-        return render_template("welcome.html")
-
+        return render_template("welcomeC.html")
 
 @app.route('/Analyze', methods=["GET", "POST"])
 def index():
