@@ -18,12 +18,12 @@
         <thead>
             <th>Symbol</th>
             <th>Last price</th>
+            <th>Change (%)</th>
             <th>Volatility (0-1)</th>
             <th>Stoc. oscillator</th>
             <th>RSI</th>
             <th>Saturation (-1 to 1)</th>
             <th>ADX</th>
-            <th>Last update</th>
         </thead>
 
         <tbody>
@@ -32,6 +32,13 @@
             <tr>
                 <td><b>{{h["Symbol"]}}</b></td>
                 <td>{{h["Last price"]}}</td>
+                {% if h["Percent"] == "N/A" %}
+                    <td>{{h["Percent"]}}</td>
+                {% elif h["Percent"] >= 0 %}
+                    <td style="color: green"><b>{{h["Percent"]}}</b></td>
+                {% else %}
+                    <td style="color: red"><b>{{h["Percent"]}}</b></td>
+                {% endif %}
                 <td>{{h["volat"]}}</td>
                 <td>{{h["SO"]}}</td>
                 <td>{{h["RSI"]}}</td>
@@ -52,7 +59,6 @@
                 {% else %}
                     <td>{{h["ADX"]}}</td>
                 {% endif %}
-                <td>{{h["Last update"]}}</td>
             </tr>
             {% endfor %}
 
@@ -65,12 +71,12 @@
         <thead>
             <th>Symbol</th>
             <th>Last price</th>
+            <th>Change (%)</th>
             <th>Volatility (0-1)</th>
             <th>Stoc. oscillator</th>
             <th>RSI</th>
             <th>Saturation (-1 to 1)</th>
             <th>ADX</th>
-            <th>Last update</th>
         </thead>
 
         <tbody>
@@ -79,6 +85,13 @@
             <tr>
                 <td><b>{{h["Symbol"]}}</b></td>
                 <td>{{h["Last price"]}}</td>
+                {% if h["Percent"] == "N/A" %}
+                    <td>{{h["Percent"]}}</td>
+                {% elif h["Percent"] >= 0 %}
+                    <td style="color: green"><b>{{h["Percent"]}}</b></td>
+                {% else %}
+                    <td style="color: red"><b>{{h["Percent"]}}</b></td>
+                {% endif %}
                 <td>{{h["volat"]}}</td>
                 <td>{{h["SO"]}}</td>
                 <td>{{h["RSI"]}}</td>
@@ -98,7 +111,6 @@
                 {% else %}
                     <td>{{h["ADX"]}}</td>
                 {% endif %}
-                <td>{{h["Last update"]}}</td>
             </tr>
             {% endfor %}
 
@@ -111,12 +123,12 @@
         <thead>
             <th>Symbol</th>
             <th>Last price</th>
+            <th>Change (%)</th>
             <th>Volatility (0-1)</th>
             <th>Stoc. oscillator</th>
             <th>RSI</th>
             <th>Saturation (-1 to 1)</th>
             <th>ADX</th>
-            <th>Last update</th>
         </thead>
 
         <tbody>
@@ -125,6 +137,13 @@
             <tr>
                 <td><b>{{h["Symbol"]}}</b></td>
                 <td>{{h["Last price"]}}</td>
+                {% if h["Percent"] == "N/A" %}
+                    <td>{{h["Percent"]}}</td>
+                {% elif h["Percent"] >= 0 %}
+                    <td style="color: green"><b>{{h["Percent"]}}</b></td>
+                {% else %}
+                    <td style="color: red"><b>{{h["Percent"]}}</b></td>
+                {% endif %}
                 <td>{{h["volat"]}}</td>
                 <td>{{h["SO"]}}</td>
                 <td>{{h["RSI"]}}</td>
@@ -144,7 +163,6 @@
                 {% else %}
                     <td>{{h["ADX"]}}</td>
                 {% endif %}
-                <td>{{h["Last update"]}}</td>
             </tr>
             {% endfor %}
 

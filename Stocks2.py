@@ -21,6 +21,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 #Individual analysis page
 #Show figures on webpage
 # Configure application
+
 app = Flask(__name__, template_folder="templates/")
 
 # Ensure templates are auto-reloaded
@@ -57,16 +58,14 @@ def main():
         DS1 = []
         DC1 = []
         DI1 = []
-        DS2 = []
-        DC2 = []
-        DI2 = []
+
         hs = []
         hc = []
         hi =[]
 
         for i in range(len(dataS)):
             DS1.append(yf.download(tickers=dataS[i][0], period = "1y", interval = "1d"))
-            DS2.append(yf.download(tickers=dataS[i][0], period = "1d", interval = "1m"))
+
             if ((len(DS1[i]['Close'])) > 30):
                 TABB = ta.volatility.BollingerBands(DS1[i]['Close'])
                 DS1[i].loc[:, 'upper'] = TABB.bollinger_hband()
@@ -88,17 +87,19 @@ def main():
                 SO = DS1[i]['%D'][-1]
                 DS1[i].loc[:, 'ADX'] = ta.trend.adx(DS1[i]['High'], DS1[i]['Low'], DS1[i]['Close'], window=14)
                 adx = DS1[i]['ADX'][-1]
-                lp = DS2[i]['Close'][-1]
                 msi  = ((RSI+SO) / 100)-1
+                lp1 = DS1[i]['Close'][-1]
+                lp2 = ((DS1[i]['Close'][-1] - DS1[i]['Close'][-2]) / DS1[i]['Close'][-2])*100
 
-                hs.append({"Symbol": dataS[i][0], "Last price": str(np.round(lp,3)), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1), "Last update": DS2[i].index[-1]})
+                hs.append({"Symbol": dataS[i][0], "Last price": np.round(lp1,3), "Percent": np.round(lp2,2), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1)})
             else:
-                hs.append({"Symbol": dataS[i][0], "Last price": str(np.round(lp,3)), "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A", "Last update": DS2[i].index[-1]})
+                hs.append({"Symbol": dataS[i][0], "Last price": "N/A", "Percent": "N/A", "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A"})
 
         print(hs)
         for i in range(len(dataC)):
             DC1.append(yf.download(tickers=dataC[i][0], period = "1y", interval = "1d"))
-            DC2.append(yf.download(tickers=dataC[i][0], period = "1d", interval = "1m"))
+
+
             if ((len(DC1[i]['Close'])) > 30):
                 TABB = ta.volatility.BollingerBands(DC1[i]['Close'])
                 DC1[i].loc[:, 'upper'] = TABB.bollinger_hband()
@@ -119,18 +120,19 @@ def main():
                 SO = DC1[i]['%D'][-1]
                 DC1[i].loc[:, 'ADX'] = ta.trend.adx(DC1[i]['High'], DC1[i]['Low'], DC1[i]['Close'], window=14)
                 adx = DC1[i]['ADX'][-1]
-                lp = DC2[i]['Close'][-1]
                 msi  = ((RSI+SO) / 100)-1
+                lp1 = DC1[i]['Close'][-1]
+                lp2 = ((DC1[i]['Close'][-1] - DC1[i]['Close'][-2]) / DC1[i]['Close'][-2])*100
 
-                hc.append({"Symbol": dataC[i][0], "Last price": str(np.round(lp,3)), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1), "Last update": DC2[i].index[-1]})    
+                hc.append({"Symbol": dataC[i][0], "Last price": np.round(lp1,3), "Percent": np.round(lp2,2), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1)})    
             else:
-                hc.append({"Symbol": dataC[i][0], "Last price": str(np.round(lp,3)), "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A", "Last update": DC2[i].index[-1]})
+                hc.append({"Symbol": dataC[i][0], "Last price": "N/A", "Percent": "N/A", "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A"})
 
         print(hc)
 
         for i in range(len(dataI)):
-            DI1.append(yf.download(tickers=dataI[i][0], period = "1y", interval = "1d"))
-            DI2.append(yf.download(tickers=dataI[i][0], period = "1d", interval = "1m"))
+            DI1.append(yf.download(tickers=dataI[i][0], period = "1y", interval = "1d"))          
+
             if ((len(DI1[i]['Close'])) > 30):
                 TABB = ta.volatility.BollingerBands(DI1[i]['Close'])
                 DI1[i].loc[:, 'upper'] = TABB.bollinger_hband()
@@ -151,12 +153,13 @@ def main():
                 SO = DI1[i]['%D'][-1]
                 DI1[i].loc[:, 'ADX'] = ta.trend.adx(DI1[i]['High'], DI1[i]['Low'], DI1[i]['Close'], window=14)
                 adx = DI1[i]['ADX'][-1]
-                lp = DI2[i]['Close'][-1]
                 msi  = ((RSI+SO) / 100)-1
+                lp1 = DI1[i]['Close'][-1]
+                lp2 = ((DI1[i]['Close'][-1] - DI1[i]['Close'][-2]) / DI1[i]['Close'][-2])*100
 
-                hi.append({"Symbol": dataI[i][0], "Last price": str(np.round(lp,3)), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1), "Last update": DI2[i].index[-1]})   
+                hi.append({"Symbol": dataI[i][0], "Last price": np.round(lp1,3), "Percent": np.round(lp2,2), "volat": str(np.round(volatility_indicator,3)), "SO": str(np.round(SO,1)), "RSI": str(np.round(RSI,1)), "MSI": np.round(msi,3), "ADX": np.round(adx,1)})   
             else:
-                hi.append({"Symbol": dataI[i][0], "Last price": str(np.round(lp,3)), "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A", "Last update": DI2[i].index[-1]})
+                hi.append({"Symbol": dataI[i][0], "Last price": "N/A", "Percent": "N/A", "volat": "N/A", "SO": "N/A", "RSI": "N/A", "MSI": "N/A", "ADX": "N/A"})
 
 
         return render_template('main.html',hs=hs, hc=hc, hi=hi)
